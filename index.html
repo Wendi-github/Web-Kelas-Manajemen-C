@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b14">
+  <title>Manajemen C UNIGAL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#080b14;--bg2:#10162b;--tx:#e9ecf8;--mut:#8f98b8;--line:rgba(255,255,255,.1);--a:#8b5cf6;--b:#22d3ee;--c:#f472b6;--card:rgba(255,255,255,.04);--ease:cubic-bezier(.2,.8,.2,1)}
+[data-theme=light]{--bg:#f6f7fd;--bg2:#e9ecfa;--tx:#14182b;--mut:#5b6486;--line:rgba(20,24,43,.12);--card:rgba(255,255,255,.7)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.65;overflow-x:hidden;transition:background .4s,color .4s}
+h1,h2,h3,.logo{font-family:"Bricolage Grotesque","DM Sans",sans-serif;line-height:1.02;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--b);outline-offset:3px}
+.grad,h1 span,h2 span{background:linear-gradient(110deg,var(--a),var(--b),var(--c),var(--a));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 8s linear infinite}
+@keyframes flow{to{background-position:300% 0}}
+
+.progress{position:fixed;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--a),var(--b),var(--c));z-index:100}
+.cursor-glow{position:fixed;width:420px;height:420px;border-radius:50%;pointer-events:none;z-index:0;left:0;top:0;background:radial-gradient(circle,rgba(139,92,246,.18),transparent 65%);transform:translate(-50%,-50%);transition:opacity .3s}
+.aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.aurora i{position:absolute;width:46vmax;height:46vmax;border-radius:50%;filter:blur(90px);opacity:.35;animation:drift 22s ease-in-out infinite alternate}
+.aurora i:nth-child(1){background:var(--a);top:-15%;left:-10%}
+.aurora i:nth-child(2){background:var(--b);bottom:-20%;right:-10%;animation-delay:-8s;opacity:.22}
+.aurora i:nth-child(3){background:var(--c);top:35%;left:40%;animation-delay:-14s;opacity:.15}
+@keyframes drift{to{transform:translate(12vw,-8vh) scale(1.2) rotate(30deg)}}
+main,footer{position:relative;z-index:1}
+
+.navbar{position:fixed;inset:0 0 auto;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:18px 6vw;transition:.4s var(--ease)}
+.navbar.scrolled{padding:12px 6vw;background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.logo{font-weight:800;font-size:1.4rem}.logo span{color:var(--b)}
+.nav-links{display:flex;align-items:center;gap:30px}
+.nav-links a{position:relative;font-size:.95rem;color:var(--mut);transition:color .3s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;height:2px;width:100%;background:var(--b);transform:scaleX(0);transform-origin:right;transition:transform .35s var(--ease)}
+.nav-links a:hover,.nav-links a.active{color:var(--tx)}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);transform-origin:left}
+.theme-btn,.menu-toggle{background:var(--card);border:1px solid var(--line);color:var(--tx);width:40px;height:40px;border-radius:50%;font-size:1.1rem;cursor:pointer;transition:transform .5s var(--ease)}
+.theme-btn:hover{transform:rotate(180deg) scale(1.1)}
+.menu-toggle{display:none}
+
+.hero{min-height:100svh;display:grid;grid-template-columns:1.1fr .9fr;gap:5vw;align-items:center;padding:130px 6vw 90px;position:relative;isolation:isolate;overflow:hidden;color:#f4f3ff;background-color:#080b14;background-image:radial-gradient(ellipse at 76% 47%,rgba(105,54,190,.48),transparent 34%),radial-gradient(ellipse at 18% 78%,rgba(24,122,177,.32),transparent 38%),linear-gradient(145deg,#080b14,#100c28 68%,#11102b)}
+.hero::before,.hero::after{content:"";position:absolute;inset:-25%;pointer-events:none;z-index:-1}
+.hero::before{background-image:radial-gradient(2px 2px at 12% 22%,rgba(255,255,255,.95) 50%,transparent 100%),radial-gradient(1px 1px at 28% 68%,rgba(34,211,238,.95) 50%,transparent 100%),radial-gradient(2px 2px at 44% 37%,rgba(255,255,255,.9) 50%,transparent 100%),radial-gradient(1px 1px at 63% 18%,rgba(244,114,182,.95) 50%,transparent 100%),radial-gradient(2px 2px at 82% 58%,rgba(255,255,255,.9) 50%,transparent 100%),radial-gradient(1px 1px at 91% 31%,rgba(34,211,238,.9) 50%,transparent 100%);background-size:300px 250px;opacity:.9;animation:star-drift 42s linear infinite}
+.hero::after{background:radial-gradient(ellipse at 76% 50%,rgba(139,92,246,.12),transparent 42%),radial-gradient(ellipse at 75% 50%,transparent 38%,rgba(34,211,238,.07) 39%,transparent 39.4%);animation:nebula-breathe 8s ease-in-out infinite alternate}
+@keyframes star-drift{to{background-position:360px 300px}}
+@keyframes nebula-breathe{to{opacity:.45;transform:scale(1.05)}}
+.hero-content,.hero-card{z-index:2}
+.hero-earth{position:absolute;z-index:3;right:3%;top:50%;width:clamp(145px,20vw,270px);aspect-ratio:1;transform:translateY(-50%);opacity:.92;filter:drop-shadow(0 0 22px rgba(34,211,238,.55));pointer-events:none;animation:earth-float 8s ease-in-out infinite}
+.hero-earth svg{display:block;width:100%;height:100%;overflow:visible}
+.hero-scorpio{position:absolute;z-index:1;right:3%;top:10%;width:clamp(145px,20vw,270px);aspect-ratio:1;pointer-events:none;filter:drop-shadow(0 0 12px rgba(244,114,182,.6));animation:scorpio-float 7s ease-in-out infinite}
+.hero-scorpio svg{display:block;width:100%;height:100%;overflow:visible}
+.scorpio-lines{fill:none;stroke:url(#scorpioLine);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:7 5;animation:scorpio-trace 8s linear infinite}
+.scorpio-stars{fill:#fff;stroke:#a5f3fc;stroke-width:2}
+.scorpio-stars circle:nth-child(3n){animation:star-twinkle 1.6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+@keyframes scorpio-float{50%{translate:0 -9px}}
+@keyframes scorpio-trace{to{stroke-dashoffset:-96}}
+@media(max-width:860px){.hero-scorpio{top:54%;right:auto;left:2%;opacity:.72}}
+.earth-orbit{fill:none;stroke:rgba(165,243,252,.62);stroke-width:1.1;stroke-dasharray:3 5;transform-origin:100px 100px;animation:spin 32s linear infinite}
+.earth-globe{transform-origin:100px 100px;animation:earth-turn 24s linear infinite}
+.earth-grid{fill:none;stroke:rgba(186,230,253,.26);stroke-width:1}
+.earth-land{fill:url(#landGradient);stroke:rgba(167,243,208,.8);stroke-width:1}
+@keyframes earth-float{50%{margin-top:-10px}}
+@keyframes earth-turn{to{transform:rotate(360deg)}}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.8rem;letter-spacing:.18em;color:var(--mut);margin-bottom:22px}
+.live-dot{width:9px;height:9px;border-radius:50%;background:#34d399;box-shadow:0 0 0 0 #34d399;animation:ping 2s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 12px transparent}100%{box-shadow:0 0 0 0 transparent}}
+h1{font-size:clamp(3.2rem,9vw,7.5rem);font-weight:800}
+h1 .ln{display:block;overflow:hidden;padding-bottom:.06em}
+h1 .ln>b{display:block;font-weight:inherit;transform:translateY(110%);animation:rise 1.1s var(--ease) forwards}
+h1 .ln:nth-child(2)>b{animation-delay:.15s}
+@keyframes rise{to{transform:none}}
+.hero-desc{max-width:46ch;margin:26px 0 34px;color:var(--mut);font-size:1.1rem}
+.hero-actions{display:flex;flex-wrap:wrap;gap:14px}
+.btn-primary,.btn-secondary{position:relative;overflow:hidden;padding:15px 28px;border-radius:99px;font-weight:600;transition:transform .35s var(--ease),box-shadow .35s}
+.btn-primary{background:linear-gradient(120deg,var(--a),var(--b));color:#fff;box-shadow:0 10px 30px -10px var(--a)}
+.btn-primary::before{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);transition:left .7s}
+.btn-primary:hover::before{left:130%}
+.btn-secondary{border:1px solid var(--line);background:var(--card)}
+.btn-primary:hover,.btn-secondary:hover{transform:translateY(-3px)}
+
+.hero-card{position:relative;aspect-ratio:1;max-width:460px;width:100%;justify-self:center;display:grid;place-items:center;border:1px solid rgba(196,181,253,.35);border-radius:36px;background:radial-gradient(circle at 50% 46%,rgba(65,38,119,.68),rgba(12,15,38,.92) 70%);box-shadow:0 24px 90px rgba(84,54,165,.2),inset 0 0 50px rgba(34,211,238,.07);backdrop-filter:blur(10px);overflow:hidden;animation:bob 7s ease-in-out infinite}
+.hero-card::before{content:"";position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.18),rgba(34,211,238,.07) 48%,transparent 72%);filter:blur(8px)}
+@keyframes bob{50%{transform:translateY(-14px)}}
+.orbit{position:absolute;border-radius:50%;border:1px dashed var(--line)}
+.orbit::after{content:"";position:absolute;top:-6px;left:50%;width:12px;height:12px;border-radius:50%;background:var(--b);box-shadow:0 0 18px var(--b)}
+.orbit-one{inset:14%;animation:spin 14s linear infinite}
+.orbit-two{inset:-6%;animation:spin 24s linear infinite reverse}
+.orbit-two::after{background:var(--c);box-shadow:0 0 18px var(--c)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.leo-lion{position:absolute;inset:17%;width:66%;height:66%;opacity:.48;filter:drop-shadow(0 0 10px rgba(244,114,182,.8));animation:lion-glow 5s ease-in-out infinite alternate}
+.leo-lion path,.leo-lion ellipse{fill:rgba(139,92,246,.1);stroke:url(#lionLine);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.leo-lion .lion-detail{fill:none;stroke-width:1.6}
+@keyframes lion-glow{to{opacity:.68;filter:drop-shadow(0 0 18px rgba(34,211,238,.9))}}
+.aquarius-constellation{position:absolute;inset:12% 6%;width:88%;height:76%;overflow:visible;opacity:.92;filter:drop-shadow(0 0 8px rgba(34,211,238,.65));animation:constellation-glow 4s ease-in-out infinite alternate}
+.aquarius-constellation path{fill:none;stroke:url(#aquaLine);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.aquarius-constellation circle{fill:#fff;stroke:#a5f3fc;stroke-width:2}
+.aquarius-constellation circle:nth-of-type(3n){animation:star-twinkle 1.8s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+@keyframes constellation-glow{to{opacity:1;filter:drop-shadow(0 0 14px rgba(244,114,182,.85))}}
+@keyframes star-twinkle{to{opacity:.35;transform:scale(.65)}}
+.hero-symbol{font:800 clamp(6rem,16vw,10rem)/1 "Bricolage Grotesque",sans-serif;background:linear-gradient(135deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-symbol{position:relative;z-index:1}
+.hero-symbol span{color:var(--c);-webkit-text-fill-color:var(--c)}
+.symbol-caption{position:absolute;bottom:9%;font-size:.8rem;letter-spacing:.3em;color:var(--mut)}
+.floating-tag{position:absolute;padding:8px 16px;border-radius:99px;font-size:.8rem;font-weight:600;background:var(--bg2);border:1px solid var(--line);animation:bob 5s ease-in-out infinite}
+.tag-top{top:12%;right:8%}.tag-bottom{bottom:20%;left:6%;animation-delay:-2.5s}
+.hero .eyebrow,.hero .hero-desc,.hero .symbol-caption,.hero .hero-footer{color:#c9c5e4}
+.hero .btn-secondary{color:#f4f3ff;border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.07)}
+.hero .floating-tag{color:#f4f3ff;background:rgba(12,15,38,.88);border-color:rgba(196,181,253,.25)}
+.navbar:not(.scrolled) .logo{color:#f4f3ff}
+.navbar:not(.scrolled) .nav-links a{color:rgba(244,243,255,.76)}
+.navbar:not(.scrolled) .nav-links a:hover,.navbar:not(.scrolled) .nav-links a.active{color:#fff}
+.navbar:not(.scrolled) .theme-btn{color:#f4f3ff;background:rgba(255,255,255,.08)}
+.hero-footer{position:absolute;left:6vw;right:6vw;bottom:28px;display:flex;justify-content:space-between;font-size:.75rem;letter-spacing:.15em;color:var(--mut)}
+.hero-footer span:first-child{animation:nudge 2s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateY(5px)}}
+
+.marquee{overflow:hidden;border-block:1px solid var(--line);padding:18px 0;background:var(--card)}
+.marquee div{display:flex;gap:48px;width:max-content;animation:scroll 28s linear infinite;font:700 1.6rem "Bricolage Grotesque",sans-serif;color:var(--mut)}
+.marquee:hover div{animation-play-state:paused}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+.section{padding:120px 6vw}
+.section-heading{margin-bottom:56px}
+h2{font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:800}
+.section-desc{margin-top:18px;color:var(--mut);max-width:52ch}
+.about-content{display:grid;gap:20px;max-width:70ch;color:var(--mut);font-size:1.12rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;max-width:640px}
+.stats div{padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--card);transition:transform .4s var(--ease),border-color .4s}
+.stats div:hover{transform:translateY(-6px);border-color:var(--b)}
+.stats strong{display:block;font:800 2.4rem "Bricolage Grotesque",sans-serif;color:var(--tx)}
+.stats span{font-size:.75rem;letter-spacing:.15em}
+
+.member-grid,.memory-grid{display:grid;gap:20px}
+.member-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.member-card{--rx:0deg;--ry:0deg;padding:32px 26px;border:1px solid var(--line);border-radius:26px;background:var(--card);transform:perspective(800px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .15s,border-color .4s,box-shadow .4s}
+.member-card:hover{border-color:var(--a);box-shadow:0 24px 50px -24px var(--a)}
+.member-avatar{width:68px;height:68px;display:grid;place-items:center;font-size:1.8rem;border-radius:20px;margin-bottom:22px;background:linear-gradient(135deg,var(--a),var(--b));transition:transform .5s var(--ease)}
+.member-card:hover .member-avatar{transform:rotate(-12deg) scale(1.12)}
+.member-role{font-size:.72rem;letter-spacing:.15em;color:var(--b)}
+.member-card h3{font-size:1.5rem;margin:6px 0}
+.member-note{color:var(--mut)}
+.hint{margin-top:26px;font-size:.85rem;color:var(--mut);font-style:italic}
+
+.memory-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:980px;margin-inline:auto}
+.memory-card{position:relative;min-height:340px;padding:26px;border-radius:28px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;color:#fff;transition:transform .5s var(--ease)}
+.memory-card::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(8,11,20,.08) 20%,rgba(8,11,20,.82) 100%);transition:opacity .5s}
+.memory-card>img,.memory-card>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.memory-card>img{transition:transform .8s var(--ease)}
+.memory-card>video{z-index:2}
+.memory-card>*:not(img):not(video){z-index:3}
+.memory-card:hover{transform:translateY(-10px) rotate(-1deg)}
+.memory-card:hover>img{transform:scale(1.08)}
+.memory-card-schedule{background:#f4f6ff}
+.memory-card-schedule::before{background:linear-gradient(180deg,transparent 65%,rgba(8,11,20,.82))}
+.memory-card-schedule>img{inset:8% auto auto 50%;width:auto;height:72%;max-width:82%;object-fit:contain;padding:0;background:#f4f6ff;transform:translateX(-50%)}
+.memory-card-schedule:hover>img{transform:translateX(-50%)}
+.memory-one{background:linear-gradient(145deg,#6d28d9,#22d3ee)}
+.memory-two{background:linear-gradient(145deg,#0e7490,#8b5cf6)}
+.memory-three{background:linear-gradient(145deg,#be185d,#8b5cf6)}
+.memory-card>span{font-size:2.2rem;width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);transition:transform .6s var(--ease)}
+.memory-card:hover>span{transform:rotate(360deg)}
+.memory-card p{font-size:.75rem;letter-spacing:.2em;opacity:.8}
+.memory-card h3{font-size:1.9rem}
+
+.closing{text-align:center;padding:140px 6vw;display:grid;justify-items:center;gap:18px}
+.closing h2{font-size:clamp(2.4rem,6.5vw,5.5rem);margin-bottom:12px}
+footer{display:flex;flex-wrap:wrap;gap:12px 30px;justify-content:space-between;align-items:center;padding:30px 6vw;border-top:1px solid var(--line);color:var(--mut);font-size:.9rem}
+
+.reveal{opacity:0;transform:translateY(40px) scale(.98);filter:blur(6px);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease);transition-delay:var(--d,0s)}
+.reveal.in{opacity:1;transform:none;filter:none}
+.member-card.reveal.in{transition:transform .15s,border-color .4s,box-shadow .4s}
+
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;padding-top:110px}
+  .hero-card{max-width:340px}
+  .memory-grid{grid-template-columns:1fr}.memory-card{min-height:300px}
+  .menu-toggle{display:block}
+  .nav-links{position:absolute;top:100%;left:4vw;right:4vw;flex-direction:column;align-items:flex-start;padding:22px;border-radius:20px;background:var(--bg2);border:1px solid var(--line);opacity:0;visibility:hidden;transform:translateY(-10px);transition:.35s var(--ease)}
+  .nav-links.open{opacity:1;visibility:visible;transform:none}
+  .hero-footer{display:none}
+  .stats{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none;filter:none}h1 .ln>b{transform:none}}
+
+/* === Tambahan: loader, partikel, teks mengetik === */
+.loader{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:var(--bg);transition:transform .9s var(--ease)}
+.loader.done{transform:translateY(-100%)}
+.loader b{font:800 5rem "Bricolage Grotesque",sans-serif;animation:pop 1s ease-in-out infinite alternate}
+.loader b span{color:var(--b)}
+@keyframes pop{from{transform:scale(.85);opacity:.5}to{transform:scale(1.08);opacity:1}}
+.loading h1 .ln>b{animation-play-state:paused}
+.loading{overflow:hidden}
+#fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-content,.hero-card{position:relative}
+.typed{margin:-14px 0 30px;font-size:1.2rem;font-weight:600}
+.typed b{color:var(--b);border-right:3px solid var(--c);padding-right:4px;animation:caret .7s steps(1) infinite}
+@keyframes caret{50%{border-color:transparent}}
+.btn-primary,.btn-secondary{will-change:transform}
+.hero-symbol{animation:glow 4s ease-in-out infinite alternate}
+@keyframes glow{from{filter:drop-shadow(0 0 10px rgba(139,92,246,.3))}to{filter:drop-shadow(0 0 34px rgba(34,211,238,.6))}}
+@media(prefers-reduced-motion:reduce){.loader{display:none}}
+  </style>
+</head>
+<body class="loading">
+  <div class="loader" aria-hidden="true"><b>M<span>C.</span></b></div>
+  <div class="progress" id="progress"></div>
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="cursor-glow" aria-hidden="true"></div>
+
+  <header class="navbar">
+    <a href="#home" class="logo">MANAJEMEN <span>C</span></a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Buka menu" aria-expanded="false">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="#home">Beranda</a>
+      <a href="#about">Tentang</a>
+      <a href="#members">Bidang Belajar</a>
+      <a href="#memories">Galeri</a>
+      <button id="themeToggle" class="theme-btn" aria-label="Ganti tema">☼</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <canvas id="fx" aria-hidden="true"></canvas>
+      <div class="hero-content">
+        <p class="eyebrow"><span class="live-dot"></span>UNIVERSITAS GALUH · FAKULTAS EKONOMI</p>
+        <h1><span class="ln"><b>MANAJEMEN</b></span><span class="ln"><b>KELAS <span>C</span></b></span></h1>
+        <p class="hero-desc">Satu kelas, banyak gagasan. Bersama, kami belajar memahami bisnis dan membangun masa depan.</p>
+        <p class="typed">Belajar bersama, <b id="typed"></b></p>
+        <div class="hero-actions">
+          <a href="#about" class="btn-primary">Kenali Kelas Kami ↗</a>
+          <a href="#memories" class="btn-secondary">Lihat Galeri</a>
+        </div>
+      </div>
+      <div class="hero-earth" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <radialGradient id="earthGradient" cx="35%" cy="28%">
+              <stop stop-color="#67e8f9"/>
+              <stop offset=".55" stop-color="#2563eb"/>
+              <stop offset="1" stop-color="#172554"/>
+            </radialGradient>
+            <linearGradient id="landGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#a7f3d0"/>
+              <stop offset="1" stop-color="#22d3ee"/>
+            </linearGradient>
+            <clipPath id="earthClip">
+              <circle cx="100" cy="100" r="57"/>
+            </clipPath>
+          </defs>
+          <ellipse class="earth-orbit" cx="100" cy="100" rx="91" ry="35" transform="rotate(-24 100 100)"/>
+          <circle cx="100" cy="100" r="59" fill="url(#earthGradient)" stroke="#a5f3fc" stroke-opacity=".8" stroke-width="1.5"/>
+          <g class="earth-globe" clip-path="url(#earthClip)">
+            <path class="earth-land" d="M55 60 66 50 81 53 88 62 83 72 75 76 72 88 64 94 58 86 51 82 47 70ZM91 93 103 87 116 90 123 99 119 110 112 116 109 130 102 142 95 132 93 119 86 111 84 101ZM119 54 131 51 138 57 148 58 153 67 146 73 137 70 130 78 121 75 115 67ZM143 112 153 109 160 114 157 122 148 125 142 120Z"/>
+            <ellipse class="earth-grid" cx="100" cy="100" rx="26" ry="57"/>
+            <ellipse class="earth-grid" cx="100" cy="100" rx="48" ry="57"/>
+            <path class="earth-grid" d="M43 100h114M49 78q51 24 102 0M49 122q51-24 102 0"/>
+          </g>
+          <circle cx="100" cy="100" r="57" fill="none" stroke="#bfdbfe" stroke-opacity=".55"/>
+          <circle cx="28" cy="76" r="2.5" fill="#fff" filter="drop-shadow(0 0 4px #fff)"/>
+          <circle cx="166" cy="126" r="2" fill="#a5f3fc" filter="drop-shadow(0 0 4px #22d3ee)"/>
+        </svg>
+      </div>
+      <div class="hero-scorpio" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="scorpioLine" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#22d3ee"/>
+              <stop offset=".52" stop-color="#a78bfa"/>
+              <stop offset="1" stop-color="#f472b6"/>
+            </linearGradient>
+          </defs>
+          <path class="scorpio-lines" d="M39 120 53 96 76 102 90 77 113 83 126 59 148 65 160 46 150 29 171 22M53 96 44 72 59 54 78 59 90 77M76 102 73 128 91 145 111 137 126 115 113 83M126 115 145 108 161 119 153 136 132 140 111 137M148 65 166 76 174 61 160 46"/>
+          <g class="scorpio-stars">
+            <circle cx="39" cy="120" r="3"/><circle cx="53" cy="96" r="3.4"/>
+            <circle cx="76" cy="102" r="3"/><circle cx="90" cy="77" r="3.2"/>
+            <circle cx="113" cy="83" r="3"/><circle cx="126" cy="59" r="3.2"/>
+            <circle cx="148" cy="65" r="3"/><circle cx="160" cy="46" r="3.4"/>
+            <circle cx="150" cy="29" r="3"/><circle cx="171" cy="22" r="4"/>
+            <circle cx="44" cy="72" r="2.6"/><circle cx="59" cy="54" r="2.8"/>
+            <circle cx="78" cy="59" r="2.5"/><circle cx="73" cy="128" r="2.7"/>
+            <circle cx="91" cy="145" r="2.8"/><circle cx="111" cy="137" r="3"/>
+            <circle cx="126" cy="115" r="2.8"/><circle cx="145" cy="108" r="2.6"/>
+            <circle cx="161" cy="119" r="2.8"/><circle cx="153" cy="136" r="2.6"/>
+            <circle cx="132" cy="140" r="2.8"/><circle cx="166" cy="76" r="2.6"/>
+            <circle cx="174" cy="61" r="2.8"/>
+          </g>
+        </svg>
+      </div>
+      <div class="hero-card">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <svg class="leo-lion" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <linearGradient id="lionLine" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#f472b6"/>
+              <stop offset=".52" stop-color="#a78bfa"/>
+              <stop offset="1" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+          <path d="M100 17 119 29 143 24 151 46 174 59 166 83 181 103 165 122 169 148 143 155 128 177 103 168 81 182 64 163 38 160 37 135 18 118 31 96 21 73 42 57 44 33 70 31Z"/>
+          <path class="lion-detail" d="M67 66 52 53M133 66l15-13M67 67Q83 52 96 68M133 67q-15-15-28 1M70 92q12-9 23 0M107 92q11-9 23 0M88 111q12-10 24 0l-12 11zM100 122q-2 15-15 18m15-18q2 15 15 18M76 124q-9 8-18 3m66-3q9 8 18 3M79 145q21 13 42 0"/>
+          <ellipse class="lion-detail" cx="78" cy="83" rx="3" ry="5"/>
+          <ellipse class="lion-detail" cx="122" cy="83" rx="3" ry="5"/>
+        </svg>
+        <svg class="aquarius-constellation" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <linearGradient id="aquaLine" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#22d3ee"/>
+              <stop offset="1" stop-color="#f472b6"/>
+            </linearGradient>
+          </defs>
+          <path d="M24 65 52 49 79 67 106 48 134 65 166 47M30 126 59 108 87 126 116 106 145 124 171 108"/>
+          <path d="M52 49 59 108M79 67 87 126M106 48 116 106M134 65 145 124"/>
+          <circle cx="24" cy="65" r="3"/><circle cx="52" cy="49" r="3"/>
+          <circle cx="79" cy="67" r="3"/><circle cx="106" cy="48" r="3"/>
+          <circle cx="134" cy="65" r="3"/><circle cx="166" cy="47" r="3"/>
+          <circle cx="30" cy="126" r="3"/><circle cx="59" cy="108" r="3"/>
+          <circle cx="87" cy="126" r="3"/><circle cx="116" cy="106" r="3"/>
+          <circle cx="145" cy="124" r="3"/><circle cx="171" cy="108" r="3"/>
+        </svg>
+        <div class="hero-symbol">M<span>C.</span></div>
+        <p class="symbol-caption">MANAJEMEN · UNIGAL</p>
+        <div class="floating-tag tag-top">✦ THINK STRATEGIC</div>
+        <div class="floating-tag tag-bottom">GROW TOGETHER ↗</div>
+      </div>
+      <div class="hero-footer">
+        <span>SCROLL TO EXPLORE ↓</span>
+        <span>UNIVERSITAS GALUH</span>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true"><div>
+      <span>✦ MANAJEMEN C</span><span>✦ SATU KELAS</span><span>✦ SATU TUJUAN</span><span>✦ TUMBUH BERSAMA</span>
+      <span>✦ MANAJEMEN C</span><span>✦ SATU KELAS</span><span>✦ SATU TUJUAN</span><span>✦ TUMBUH BERSAMA</span>
+    </div></div>
+
+    <section class="section about" id="about">
+      <div class="section-heading reveal">
+        <p class="eyebrow">01 / TENTANG KAMI</p>
+        <h2>Berbeda gagasan.<br><span>Satu tujuan.</span></h2>
+      </div>
+      <div class="about-content reveal">
+        <p>
+
+Mahasiswa Program Studi Manajemen, Fakultas Ekonomi Universitas Galuh (UNIGAL), belajar memahami bagaimana sebuah organisasi dan usaha dapat berjalan dengan baik. Di Kelas C, kami bertukar ide, bekerja sama, dan berkembang melalui proses belajar yang sama.
+
+Program Studi Manajemen membekali mahasiswa dengan pengetahuan dan keterampilan untuk merencanakan, mengorganisasi, mengarahkan, serta mengevaluasi sumber daya. Pembelajarannya mencakup bidang pemasaran, keuangan, sumber daya manusia, dan operasional—bekal untuk membaca tantangan, mengambil keputusan, serta menciptakan nilai dalam dunia usaha.</p>
+        <p>Manajemen C adalah ruang untuk bertumbuh: berani menyampaikan gagasan, saling mendukung, dan menyiapkan diri menjadi insan profesional yang adaptif dan berintegritas.</p>
+        <div class="stats">
+          <div><strong>4</strong><span>BIDANG UTAMA</span></div>
+          <div><strong>1</strong><span>SEMANGAT KOLABORASI</span></div>
+          <div><strong>∞</strong><span>PELUANG BERTUMBUH</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section members" id="members">
+      <div class="section-heading reveal">
+        <p class="eyebrow">02 / YANG KAMI PELAJARI</p>
+        <h2>Memahami bisnis.<br><span>Menciptakan dampak.</span></h2>
+        <p class="section-desc">Ilmu manajemen membantu kita mengelola ide, orang, dan sumber daya untuk mencapai tujuan bersama.</p>
+      </div>
+      <div class="member-grid">
+        <article class="member-card reveal"><div class="member-avatar">↗</div><p class="member-role">01 / PEMASARAN</p><h3>Kenali pasar</h3><p class="member-note">Memahami kebutuhan pelanggan dan merancang strategi pemasaran.</p></article>
+        <article class="member-card reveal"><div class="member-avatar">◈</div><p class="member-role">02 / KEUANGAN</p><h3>Kelola sumber daya</h3><p class="member-note">Mempelajari perencanaan keuangan dan penggunaan dana secara bijak.</p></article>
+        <article class="member-card reveal"><div class="member-avatar">◎</div><p class="member-role">03 / SUMBER DAYA MANUSIA</p><h3>Kembangkan potensi</h3><p class="member-note">Membangun kolaborasi dan mendukung potensi setiap orang.</p></article>
+        <article class="member-card reveal"><div class="member-avatar">✦</div><p class="member-role">04 / OPERASIONAL</p><h3>Wujudkan rencana</h3><p class="member-note">Mengatur proses kerja agar tujuan dapat dicapai secara efektif.</p></article>
+      </div>
+      <p class="hint">Belajar mengelola hari ini, bersiap memimpin perubahan esok hari.</p>
+    </section>
+
+    <section class="section memories" id="memories">
+      <div class="section-heading reveal">
+        <p class="eyebrow">03 / GALERI KELAS</p>
+        <h2>Momen sederhana.<br><span>Cerita luar biasa.</span></h2>
+        <p class="section-desc">Potret kebersamaan Manajemen C Universitas Galuh.</p>
+      </div>
+      <div class="memory-grid">
+
+        <article class="memory-card memory-one reveal">
+          <img src="images/foto1.jpeg" alt="Kebersamaan mahasiswa Manajemen C">
+          <span>✦</span>
+          <div>
+            <p>MANAJEMEN C · 01</p>
+            <h3>Satu Kelas, Satu Cerita</h3>
+          </div>
+        </article>
+        <article class="memory-card memory-two reveal">
+          <img src="images/foto2.jpeg" alt="Momen bersama Kelas Manajemen C">
+          <span>↗</span>
+          <div>
+            <p>MANAJEMEN C · 02</p>
+            <h3>Tumbuh Bersama</h3>
+          </div>
+        </article>
+        <article class="memory-card memory-three reveal">
+          <img src="images/foto3.jpeg" alt="Potret mahasiswa Manajemen C">
+          <span>✦</span>
+          <div>
+            <p>MANAJEMEN C · 03</p>
+            <h3>Kenangan Kelas</h3>
+          </div>
+        </article>
+        <article class="memory-card memory-four reveal">
+          <video controls playsinline preload="metadata" aria-label="Video kenangan Kelas Manajemen C">
+            <source src="images/foto4.mp4" type="video/mp4">
+            Browser kamu tidak mendukung pemutaran video.
+          </video>
+          <div>
+            <p>MANAJEMEN C · 04</p>
+            <h3>Video Kenangan</h3>
+          </div>
+        </article>
+        <article class="memory-card memory-one reveal">
+          <img src="images/foto5.jpeg" alt="Momen kebersamaan Manajemen C">
+          <span>✦</span>
+          <div>
+            <p>MANAJEMEN C · 05</p>
+            <h3>Berbagi Momen</h3>
+          </div>
+        </article>
+        <article class="memory-card memory-two memory-card-schedule reveal">
+          <img src="images/foto6.jpeg" alt="Jadwal kuliah Kelas Manajemen C">
+          <span>↗</span>
+          <div>
+            <p>MANAJEMEN C · 06</p>
+            <h3>Jadwal Kuliah</h3>
+          </div>
+        </article>
+      </div>
+
+      <p class="hint">Kenangan hari ini, semangat untuk masa depan.</p>
+    </section>
+
+    <section class="closing reveal">
+      <p class="eyebrow">LANGKAH KECIL, DAMPAK BESAR</p>
+      <h2>Manajemen C.<br><span>Tumbuh dan berdampak.</span></h2>
+      <a href="#home" class="btn-primary">Kembali ke atas ↑</a>
+    </section>
+  </main>
+
+  <footer>
+    <a href="#home" class="logo">MANAJEMEN <span>C</span></a>
+    <p>Belajar, berkolaborasi, bertumbuh.</p>
+    <p>Software Engineer by Wenzz</p>
+    <p>© <span id="year"></span> Manajemen C · Universitas Galuh</p>
+  </footer>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const root = document.documentElement;
+
+  // Tema (tersimpan)
+  const themeBtn = $("#themeToggle");
+  let saved = null;
+  try { saved = localStorage.getItem("theme"); } catch (e) {}
+  const setTheme = t => { root.dataset.theme = t; themeBtn.textContent = t === "light" ? "☾" : "☼"; };
+  setTheme(saved || "dark");
+  themeBtn.addEventListener("click", () => {
+    const t = root.dataset.theme === "light" ? "dark" : "light";
+    setTheme(t);
+    try { localStorage.setItem("theme", t); } catch (e) {}
+  });
+
+  // Menu mobile
+  const toggle = $("#menuToggle"), links = $("#navLinks");
+  const closeMenu = () => { links.classList.remove("open"); toggle.setAttribute("aria-expanded", "false"); toggle.textContent = "☰"; };
+  toggle.addEventListener("click", () => {
+    const open = links.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", open);
+    toggle.textContent = open ? "✕" : "☰";
+  });
+  $$("a", links).forEach(a => a.addEventListener("click", closeMenu));
+
+  // Scroll: progress bar, navbar, menu aktif
+  const bar = $("#progress"), nav = $(".navbar");
+  const onScroll = () => {
+    const h = root.scrollHeight - innerHeight;
+    bar.style.transform = `scaleX(${h > 0 ? scrollY / h : 0})`;
+    nav.classList.toggle("scrolled", scrollY > 30);
+  };
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  const navAnchors = $$("a", links);
+  const spy = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) navAnchors.forEach(a => a.classList.toggle("active", a.hash === "#" + e.target.id));
+  }), { rootMargin: "-45% 0px -50% 0px" });
+  $$("main section[id]").forEach(s => spy.observe(s));
+
+  // Reveal bertahap
+  $$(".member-grid,.memory-grid,.stats").forEach(g => $$(".reveal,div", g).forEach((el, i) => el.style.setProperty("--d", i * 0.12 + "s")));
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add("in");
+    if (e.target.classList.contains("about-content")) countUp();
+    io.unobserve(e.target);
+  }), { threshold: 0.15 });
+  $$(".reveal").forEach(el => io.observe(el));
+
+  // Hitung angka statistik
+  function countUp() {
+    $$(".stats strong[data-count]").forEach(el => {
+      const end = +el.dataset.count, suf = el.dataset.suffix || "", t0 = performance.now();
+      const step = t => {
+        const p = Math.min((t - t0) / 1600, 1), v = Math.round(end * (1 - Math.pow(1 - p, 3)));
+        el.textContent = String(v).padStart(end < 10 ? 2 : 1, "0") + suf;
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  }
+
+  // Efek miring kartu anggota
+  if (matchMedia("(hover:hover)").matches) {
+    $$(".member-card").forEach(c => {
+      c.addEventListener("mousemove", e => {
+        const r = c.getBoundingClientRect();
+        c.style.setProperty("--ry", ((e.clientX - r.left) / r.width - .5) * 14 + "deg");
+        c.style.setProperty("--rx", ((e.clientY - r.top) / r.height - .5) * -14 + "deg");
+      });
+      c.addEventListener("mouseleave", () => { c.style.setProperty("--rx", "0deg"); c.style.setProperty("--ry", "0deg"); });
+    });
+    const glow = $(".cursor-glow");
+    addEventListener("mousemove", e => { glow.style.transform = `translate(${e.clientX - 210}px,${e.clientY - 210}px)`; glow.style.left = glow.style.top = "0"; });
+  }
+
+  $("#year").textContent = new Date().getFullYear();
+});
+
+/* === Tambahan: loader, mengetik, partikel, tombol magnetis === */
+(() => {
+  const reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const done = () => {
+    const l = document.querySelector(".loader");
+    document.body.classList.remove("loading");
+    if (l) { l.classList.add("done"); setTimeout(() => l.remove(), 1000); }
+  };
+  addEventListener("load", () => setTimeout(done, reduce ? 0 : 900));
+  setTimeout(done, 3000);
+
+  // Teks mengetik
+  const el = document.getElementById("typed");
+  const words = ["berpikir strategis.", "berkolaborasi.", "menciptakan dampak.", "siap bertumbuh."];
+  if (reduce) el.textContent = words[0];
+  else {
+    let w = 0, c = 0, del = false;
+    const tick = () => {
+      const word = words[w];
+      el.textContent = word.slice(0, c);
+      if (!del && c === word.length) { del = true; return setTimeout(tick, 1600); }
+      if (del && c === 0) { del = false; w = (w + 1) % words.length; }
+      c += del ? -1 : 1;
+      setTimeout(tick, del ? 35 : 80);
+    };
+    setTimeout(tick, 1600);
+  }
+
+  // Partikel interaktif di hero
+  const cv = document.getElementById("fx");
+  if (!reduce && cv) {
+    const ctx = cv.getContext("2d"), m = { x: -999, y: -999 };
+    let W, H, ps = [];
+    const size = () => {
+      W = cv.width = cv.offsetWidth; H = cv.height = cv.offsetHeight;
+      const n = Math.min(70, Math.floor(W * H / 16000));
+      ps = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .5, vy: (Math.random() - .5) * .5 }));
+    };
+    size(); addEventListener("resize", size);
+    cv.parentElement.addEventListener("mousemove", e => { const r = cv.getBoundingClientRect(); m.x = e.clientX - r.left; m.y = e.clientY - r.top; });
+    cv.parentElement.addEventListener("mouseleave", () => { m.x = m.y = -999; });
+    (function draw() {
+      ctx.clearRect(0, 0, W, H);
+      for (const p of ps) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        const dx = m.x - p.x, dy = m.y - p.y, dm = Math.hypot(dx, dy);
+        if (dm < 140) { p.x -= dx * .01; p.y -= dy * .01; }
+        ctx.fillStyle = "rgba(34,211,238,.8)";
+        ctx.beginPath(); ctx.arc(p.x, p.y, 1.8, 0, 6.3); ctx.fill();
+      }
+      for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++) {
+        const d = Math.hypot(ps[i].x - ps[j].x, ps[i].y - ps[j].y);
+        if (d < 120) {
+          ctx.strokeStyle = `rgba(139,92,246,${(1 - d / 120) * .5})`;
+          ctx.beginPath(); ctx.moveTo(ps[i].x, ps[i].y); ctx.lineTo(ps[j].x, ps[j].y); ctx.stroke();
+        }
+      }
+      requestAnimationFrame(draw);
+    })();
+  }
+
+  // Tombol magnetis
+  if (!reduce && matchMedia("(hover:hover)").matches) {
+    document.querySelectorAll(".btn-primary,.btn-secondary").forEach(b => {
+      b.addEventListener("mousemove", e => {
+        const r = b.getBoundingClientRect();
+        b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .25}px,${(e.clientY - r.top - r.height / 2) * .35}px)`;
+      });
+      b.addEventListener("mouseleave", () => { b.style.transform = ""; });
+    });
+  }
+})();
+  </script>
+</body>
+</html>
